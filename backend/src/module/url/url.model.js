@@ -17,10 +17,11 @@ const urlSchema = new mongoose.Schema(
         clicks: {
 
             type: Number,
+            default: 0
 
 
         },
-        createAt: {
+        createdAt: {
             type: Date,
             default: Date.now,
             expires: 292000

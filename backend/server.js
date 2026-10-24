@@ -5,7 +5,7 @@ import app from "./src/app.js";
 
 
 config();
-connectDb();
+await connectDb();
 
 const PORT = process.env.PORT;
 
