@@ -1,16 +1,39 @@
-import React from "react";
+import React, { useState } from "react";
+import { shortenUrlApi } from "../api/api";
 import { Container, Paper, Box, Typography, Stack } from "@mui/material";
-// Change from "./components/UrlForm" to "./UrlForm" because they sit in the same folder
-import UrlForm from "./urlForm";
-import UrlResult from "./urlResult";
-
+import UrlForm from "./UrlForm";
+import UrlResult from "./UrlResult";
 
 export default function UrlPage() {
+  const [url, setUrl] = useState("");
+  const [shortUrl, setShortUrl] = useState("");
+  const [loading, setLoading] = useState(false);
+  const [error, setError] = useState("");
 
-    const [url, setUrl] = useState("");
-    const [shortUrl, setShortUrl] = useState("");
-    const [loading, setLoading] = useState(true);
-    const [error, setError] = useState("");
+  const handleSubmit = async (e) => {
+    e.preventDefault();
+
+    if (!url.trim()) {
+      setError("Please provide a valid URL");
+      return;
+    }
+
+    setError("");
+    setLoading(true);
+
+    try {
+      const response = await shortenUrlApi(url);
+      const baseUrl = import.meta.env.VITE_API_URL || "http://localhost:8080";
+      const theCompleteLink = `${baseUrl}/${response.newUrl.shortCode}`;
+      setShortUrl(theCompleteLink);
+    } catch (err) {
+      const errorMsg = err.response?.data?.message || "Failed to shorten URL. Make sure the server is running.";
+      setError(errorMsg);
+    } finally {
+      setLoading(false);
+    }
+  };
+
   return (
     <Container maxWidth="sm">
       <Box sx={{ mt: 8 }}>
@@ -24,10 +47,16 @@ export default function UrlPage() {
                 Paste your long link and get a quick, trackable short URL.
               </Typography>
             </Box>
-            
-            <UrlForm />
-            
-            <UrlResult />
+
+            <UrlForm 
+              url={url} 
+              setUrl={setUrl} 
+              handleSubmit={handleSubmit} 
+              loading={loading} 
+              error={error} 
+            />
+
+            {shortUrl && <UrlResult shortUrl={shortUrl} />}
           </Stack>
         </Paper>
       </Box>

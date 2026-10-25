@@ -1,43 +1,39 @@
-import React from "react";
-import {useState} from "react";
-import { Box, TextField, Button, Stack } from '@mui/material';
-import LinkIcon from '@mui/icons-material/Link';
+import { TextField, Button, Stack, Alert, CircularProgress } from '@mui/material';
 
 
-export default function UrlForm(){
-
-    const [url,setUrl] = useState("");
-
-    const handleSubmit = (e) => {
-    e.preventDefault();
-    // Submission logic will go here
-    console.log('URL to shorten:', url);
-  };
+export default function UrlForm({ url, setUrl, handleSubmit, loading, error }) {
 
 
     return (
     
-        <Box component="form" onSubmit={handleSubmit} sx={{ width: '100%' }}>
+  <form onSubmit={handleSubmit}>
       <Stack spacing={2}>
+        {error && (
+          <Alert severity="error">
+            {error}
+          </Alert>
+        )}
         <TextField
-          fullWidth
           label="Enter your long URL"
           placeholder="https://example.com/very-long-link"
           variant="outlined"
+          fullWidth
           value={url}
           onChange={(e) => setUrl(e.target.value)}
+          disabled={loading}
         />
         <Button
           type="submit"
           variant="contained"
           size="large"
           fullWidth
-          startIcon={<LinkIcon />}
+          disabled={loading}
+          sx={{ minHeight: 48 }}
         >
-          Shorten URL
+          {loading ? <CircularProgress size={24} color="inherit" /> : "Shorten URL"}
         </Button>
       </Stack>
-    </Box>
+    </form>
     
     )
 }
